@@ -116,13 +116,15 @@ public:
 	void scale(const std::array<double, 3> &scaling, const std::array<double, 3> &center) override;
 
 #if BITPIT_ENABLE_MPI==1
-	void setCommunicator(MPI_Comm communicator) override;
-
 	int getCellHaloLayer(long id) const override;
 #endif
 
 protected:
 	VolOctree(const VolOctree &other);
+
+#if BITPIT_ENABLE_MPI==1
+	void setCommunicator(MPI_Comm communicator) override;
+#endif
 
 	std::vector<adaption::Info> _spawn(bool trackSpawn) override;
 
