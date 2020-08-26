@@ -155,7 +155,8 @@ int subtest_001(int rank)
 
 
     // Mesh Partitioning
-    mapper = mesh.partition(MPI_COMM_WORLD, true) ;
+    mesh.initializePartitioning(MPI_COMM_WORLD) ;
+    mapper = mesh.partition(true) ;
 
     start = std::chrono::system_clock::now();
     levelset.partition(mapper) ;

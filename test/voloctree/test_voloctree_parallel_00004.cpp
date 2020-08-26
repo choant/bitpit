@@ -60,8 +60,11 @@ int subtest_001(int rank)
 	patch_2D->initializeInterfaces();
 	patch_2D->update();
 
+	// Initialize partitioning
+	patch_2D->initializePartitioning(MPI_COMM_WORLD, nGhostLayers);
+
 	// Partition the patch
-	patch_2D->partition(MPI_COMM_WORLD, true, true, nGhostLayers);
+	patch_2D->partition(true, true);
 
 	// Get information on patch numbering
 	PatchNumberingInfo patchNumberingInfo(patch_2D);
@@ -143,8 +146,11 @@ int subtest_002(int rank)
 	patch_3D->initializeInterfaces();
 	patch_3D->update();
 
+	// Initialize partitioning
+	patch_3D->initializePartitioning(MPI_COMM_WORLD, nGhostLayers);
+
 	// Partition the patch
-	patch_3D->partition(MPI_COMM_WORLD, true, true, nGhostLayers);
+	patch_3D->partition(true, true);
 
 	// Get information on patch numbering
 	PatchNumberingInfo patchNumberingInfo(patch_3D);

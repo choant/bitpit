@@ -47,7 +47,6 @@ int subtest_001()
 
 	// Create the patch
 	VolOctree *patch_2D_original = new VolOctree(2, origin, length, dh);
-	patch_2D_original->setCommunicator(MPI_COMM_WORLD);
 	patch_2D_original->getVTK().setName("octree_parallel_uniform_patch_2D");
 	patch_2D_original->initializeAdjacencies();
 	patch_2D_original->initializeInterfaces();
@@ -57,6 +56,9 @@ int subtest_001()
 	// Clone the patch
 	std::unique_ptr<VolOctree> patch_2D = PatchKernel::clone(patch_2D_original);
 	delete patch_2D_original;
+
+	// Initialize partitioning
+	patch_2D->initializePartitioning(MPI_COMM_WORLD);
 
 	// Partition the patch
 	patch_2D->partition(true);
@@ -117,7 +119,6 @@ int subtest_002()
 
 	// Create the patch
 	VolOctree *patch_3D_original = new VolOctree(3, origin, length, dh);
-	patch_3D_original->setCommunicator(MPI_COMM_WORLD);
 	patch_3D_original->getVTK().setName("octree_parallel_uniform_patch_3D");
 	patch_3D_original->initializeAdjacencies();
 	patch_3D_original->initializeInterfaces();
@@ -127,6 +128,9 @@ int subtest_002()
 	// Clone the patch
 	std::unique_ptr<VolOctree> patch_3D = PatchKernel::clone(patch_3D_original);
 	delete patch_3D_original;
+
+	// Initialize partitioning
+	patch_3D->initializePartitioning(MPI_COMM_WORLD);
 
 	// Partition the patch
 	patch_3D->partition(true);

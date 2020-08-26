@@ -369,8 +369,8 @@ SurfUnstructured                     mesh(2, 3);
     // Scope variables ------------------------------------------------------ //
     // none
 
-    // Set MPI communicator ------------------------------------------------- //
-    mesh.setCommunicator(MPI_COMM_WORLD);
+    // Initialize partitioning ---------------------------------------------- //
+    mesh.initializePartitioning(MPI_COMM_WORLD);
 
 }
 
@@ -521,10 +521,11 @@ SurfUnstructured            mesh(2, 3);
     // Scope variables ------------------------------------------------------ //
     // none
 
-    // Set MPI communicator ------------------------------------------------- //
-    mesh.setExpert(true);
-    mesh.setCommunicator(MPI_COMM_WORLD);
+    // Partition the empty patch -------------------------------------------- //
+    mesh.initializePartitioning(MPI_COMM_WORLD);
 
+    // Set expert mode ------------------------------------------------------ //
+    mesh.setExpert(true);
 }
 
 // ========================================================================== //
@@ -738,9 +739,11 @@ SurfUnstructured            mesh(2, 3);
     // Scope variables ------------------------------------------------------ //
     // none
 
-    // Set MPI communicator ------------------------------------------------- //
+    // Partition the empty patch -------------------------------------------- //
+    mesh.initializePartitioning(MPI_COMM_WORLD);
+
+    // Set expert mode ------------------------------------------------------ //
     mesh.setExpert(true);
-    mesh.setCommunicator(MPI_COMM_WORLD);
 
 }
 

@@ -119,7 +119,9 @@ int subtest_001(int rank)
     // Partition the mesh over available processes
     start = std::chrono::system_clock::now();
 
-    mapper = mesh.partition(MPI_COMM_WORLD, true) ;
+    mesh.initializePartitioning(MPI_COMM_WORLD) ;
+    mapper = mesh.partition(true) ;
+
     levelset.partition(mapper) ;
 
     end = std::chrono::system_clock::now();

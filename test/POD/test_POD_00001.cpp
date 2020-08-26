@@ -52,7 +52,7 @@ int subtest_001(int rank, int nProcs)
     /**<Create the patch.*/ 
     VolumeKernel * mesh = new VolOctree(2, origin, length, dh);
 #if BITPIT_ENABLE_MPI    
-    mesh->setCommunicator(MPI_COMM_WORLD);
+    mesh->initializePartitioning(MPI_COMM_WORLD);
 #endif
     mesh->initializeAdjacencies();
     mesh->initializeInterfaces();

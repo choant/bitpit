@@ -119,9 +119,6 @@ int subtest_001(int rank)
     patch->initializeAdjacencies();
     patch->initializeInterfaces();
 
-    // Set patch communicator
-    patch->setCommunicator(MPI_COMM_WORLD);
-
     // Show patch info
     log::cout() << "Cell count: " << patch->getCellCount() << std::endl;
     log::cout() << "Internal cell count: " << patch->getInternalCellCount() << std::endl;
@@ -133,6 +130,9 @@ int subtest_001(int rank)
     //
     // Partition the patch
     //
+
+    // Initialize partitioning
+    patch->initializePartitioning(MPI_COMM_WORLD);
 
     // Evaluate cell ranks
     log::cout() << "Evaluating cell ranks..." << std::endl;

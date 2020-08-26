@@ -53,7 +53,6 @@ int subtest_001(int rank, VolOctree *patch_2D, VolOctree *patch_2D_restored)
     log::cout() << "Creating 2D patch..." << std::endl;
 
     patch_2D = new VolOctree(2, origin, length, dh);
-    patch_2D->setCommunicator(MPI_COMM_WORLD);
     patch_2D->getVTK().setName("octree_uniform_patch_2D");
     patch_2D->initializeAdjacencies();
     patch_2D->initializeInterfaces();
@@ -124,6 +123,9 @@ int subtest_001(int rank, VolOctree *patch_2D, VolOctree *patch_2D_restored)
     }
     patch_2D->update();
 
+    // Initialize partitioning
+    patch_2D->initializePartitioning(MPI_COMM_WORLD);
+
     // Partition the patch
     patch_2D->partition(true);
 
@@ -145,7 +147,7 @@ int subtest_001(int rank, VolOctree *patch_2D, VolOctree *patch_2D_restored)
     log::cout() << "Restoring 2D patch..." << std::endl;
 
     patch_2D_restored = new VolOctree();
-    patch_2D_restored->setCommunicator(MPI_COMM_WORLD);
+    patch_2D_restored->initializePartitioning(MPI_COMM_WORLD);
     IBinaryArchive binaryReader2D("octree_uniform_patch_2D", rank);
     patch_2D_restored->restore(binaryReader2D.getStream());
     binaryReader2D.close();
@@ -179,7 +181,6 @@ int subtest_002(int rank, VolOctree *patch_3D, VolOctree *patch_3D_restored)
     log::cout() << "Creating 3D patch..." << std::endl;
 
     patch_3D = new VolOctree(3, origin, length, dh);
-    patch_3D->setCommunicator(MPI_COMM_WORLD);
     patch_3D->getVTK().setName("octree_uniform_patch_3D");
     patch_3D->initializeAdjacencies();
     patch_3D->initializeInterfaces();
@@ -250,6 +251,9 @@ int subtest_002(int rank, VolOctree *patch_3D, VolOctree *patch_3D_restored)
     }
     patch_3D->update();
 
+    // Initialize partitioning
+    patch_3D->initializePartitioning(MPI_COMM_WORLD);
+
     // Partition the patch
     patch_3D->partition(true);
 
@@ -271,7 +275,7 @@ int subtest_002(int rank, VolOctree *patch_3D, VolOctree *patch_3D_restored)
     log::cout() << "Restoring 3D patch..." << std::endl;
 
     patch_3D_restored = new VolOctree();
-    patch_3D_restored->setCommunicator(MPI_COMM_WORLD);
+    patch_3D_restored->initializePartitioning(MPI_COMM_WORLD);
     IBinaryArchive binaryReader3D("octree_uniform_patch_3D", rank);
     patch_3D_restored->restore(binaryReader3D.getStream());
     binaryReader3D.close();

@@ -94,8 +94,8 @@ SurfUnstructured                mesh(2, 3);
     // Set name ------- ----------------------------------------------------- //
     mesh.getVTK().setName("surfunstructured_partition");
 
-    // Set communicator ----------------------------------------------------- //
-    mesh.setCommunicator(MPI_COMM_WORLD);
+    // Initialize partitioning ---------------------------------------------- //
+    mesh.initializePartitioning(MPI_COMM_WORLD);
 }
 
 // ========================================================================== //
@@ -324,7 +324,8 @@ SurfUnstructured                mesh(2, 3);
         }
     }
 
-    mesh.partition(communicator, cellRanks, false);
+    mesh.initializePartitioning(communicator);
+    mesh.partition(cellRanks, false);
 
     // Write mesh ----------------------------------------------------------- //
     log::cout() << "** Writing mesh" << endl;

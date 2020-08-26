@@ -47,7 +47,6 @@ int subtest_001(int rank, VolUnstructured *patch_2D, VolUnstructured *patch_2D_r
     log::cout() << "Creating 2D patch..." << std::endl;
 
     patch_2D = new VolUnstructured(2);
-    patch_2D->setCommunicator(MPI_COMM_WORLD);
     patch_2D->getVTK().setName("unstructured_patch_2D");
 
     // Fill the patch
@@ -96,6 +95,9 @@ int subtest_001(int rank, VolUnstructured *patch_2D, VolUnstructured *patch_2D_r
 
     patch_2D->initializeAdjacencies();
     patch_2D->initializeInterfaces();
+
+    // Initialize partitioning
+    patch_2D->initializePartitioning(MPI_COMM_WORLD);
 
     // Partition the patch
     std::unordered_map<long, int> cellRanks;
@@ -223,7 +225,7 @@ int subtest_001(int rank, VolUnstructured *patch_2D, VolUnstructured *patch_2D_r
     log::cout() << "Restoring 2D patch..." << std::endl;
 
     patch_2D_restored = new VolUnstructured();
-    patch_2D_restored->setCommunicator(MPI_COMM_WORLD);
+    patch_2D_restored->initializePartitioning(MPI_COMM_WORLD);
     IBinaryArchive binaryReader2D("unstructured_patch_2D", rank);
     patch_2D_restored->restore(binaryReader2D.getStream());
 
@@ -324,8 +326,8 @@ int subtest_002(int rank, VolUnstructured *patch_3D, VolUnstructured *patch_3D_r
     log::cout() << "\n\n:: 3D unstructured mesh ::\n";
 
     patch_3D = new VolUnstructured(3);
-    patch_3D->setCommunicator(MPI_COMM_WORLD);
     patch_3D->getVTK().setName("unstructured_patch_3D");
+    patch_3D->initializePartitioning(MPI_COMM_WORLD);
 
     // Fill the patch
     if (rank == 0) {
@@ -598,7 +600,7 @@ int subtest_002(int rank, VolUnstructured *patch_3D, VolUnstructured *patch_3D_r
     log::cout() << "Restoring 3D patch..." << std::endl;
 
     patch_3D_restored = new VolUnstructured();
-    patch_3D_restored->setCommunicator(MPI_COMM_WORLD);
+    patch_3D_restored->initializePartitioning(MPI_COMM_WORLD);
     IBinaryArchive binaryReader3D("unstructured_patch_3D", rank);
     patch_3D_restored->restore(binaryReader3D.getStream());
 

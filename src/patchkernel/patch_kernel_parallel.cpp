@@ -1026,6 +1026,24 @@ void PatchKernel::updateFirstGhostCellId()
 }
 
 /*!
+	Initialize patch partitioning.
+
+	\param communicator is the communicator that will be used
+	\param haloSize is the size, expressed in number of layers, of the ghost
+	cells halo
+*/
+void PatchKernel::initializePartitioning(MPI_Comm communicator, std::size_t haloSize)
+{
+	if (isPartitioned()) {
+		throw std::runtime_error ("Partitioning can be initialized only once!");
+	}
+
+	setCommunicator(communicator);
+
+	setHaloSize(haloSize);
+}
+
+/*!
 	Partitions the patch among the processors. Each cell will be assigned
 	to a specific processor according to the specified input.
 
@@ -1042,9 +1060,7 @@ void PatchKernel::updateFirstGhostCellId()
 */
 std::vector<adaption::Info> PatchKernel::partition(MPI_Comm communicator, const std::unordered_map<long, int> &cellRanks, bool trackPartitioning, bool squeezeStorage, std::size_t haloSize)
 {
-	setCommunicator(communicator);
-
-	setHaloSize(haloSize);
+	initializePartitioning(communicator, haloSize);
 
 	return partition(cellRanks, trackPartitioning, squeezeStorage);
 }
@@ -1088,9 +1104,7 @@ std::vector<adaption::Info> PatchKernel::partition(const std::unordered_map<long
 */
 std::vector<adaption::Info> PatchKernel::partition(MPI_Comm communicator, bool trackPartitioning, bool squeezeStorage, std::size_t haloSize)
 {
-	setCommunicator(communicator);
-
-	setHaloSize(haloSize);
+	initializePartitioning(communicator, haloSize);
 
 	std::unordered_map<long, double> dummyCellWeights;
 
@@ -1140,9 +1154,7 @@ std::vector<adaption::Info> PatchKernel::partition(bool trackPartitioning, bool 
 */
 std::vector<adaption::Info> PatchKernel::partition(MPI_Comm communicator, const std::unordered_map<long, double> &cellWeights, bool trackPartitioning, bool squeezeStorage, std::size_t haloSize)
 {
-	setCommunicator(communicator);
-
-	setHaloSize(haloSize);
+	initializePartitioning(communicator, haloSize);
 
 	return partition(cellWeights, trackPartitioning, squeezeStorage);
 }
@@ -1187,9 +1199,7 @@ std::vector<adaption::Info> PatchKernel::partition(const std::unordered_map<long
 */
 std::vector<adaption::Info> PatchKernel::partitioningPrepare(MPI_Comm communicator, const std::unordered_map<long, int> &cellRanks, bool trackPartitioning, std::size_t haloSize)
 {
-	setCommunicator(communicator);
-
-	setHaloSize(haloSize);
+	initializePartitioning(communicator, haloSize);
 
 	return partitioningPrepare(cellRanks, trackPartitioning);
 }
@@ -1353,9 +1363,7 @@ std::vector<adaption::Info> PatchKernel::partitioningPrepare(const std::unordere
 */
 std::vector<adaption::Info> PatchKernel::partitioningPrepare(MPI_Comm communicator, bool trackPartitioning, std::size_t haloSize)
 {
-	setCommunicator(communicator);
-
-	setHaloSize(haloSize);
+	initializePartitioning(communicator, haloSize);
 
 	std::unordered_map<long, double> dummyCellWeights;
 
@@ -1395,9 +1403,7 @@ std::vector<adaption::Info> PatchKernel::partitioningPrepare(bool trackPartition
 */
 std::vector<adaption::Info> PatchKernel::partitioningPrepare(MPI_Comm communicator, const std::unordered_map<long, double> &cellWeights, bool trackPartitioning, std::size_t haloSize)
 {
-	setCommunicator(communicator);
-
-	setHaloSize(haloSize);
+	initializePartitioning(communicator, haloSize);
 
 	return partitioningPrepare(cellWeights, trackPartitioning);
 }

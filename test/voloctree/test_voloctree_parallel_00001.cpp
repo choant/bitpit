@@ -49,11 +49,13 @@ int subtest_001(int rank)
 
 	// Create the patch
 	VolOctree *patch_2D = new VolOctree(2, origin, length, dh);
-	patch_2D->setCommunicator(MPI_COMM_WORLD);
 	patch_2D->getVTK().setName("octree_parallel_uniform_patch_2D");
 	patch_2D->initializeAdjacencies();
 	patch_2D->initializeInterfaces();
 	patch_2D->update();
+
+	// Initialize partitioning
+	patch_2D->initializePartitioning(MPI_COMM_WORLD);
 
 	// Partition the patch
 	patch_2D->partition(true);
@@ -116,11 +118,13 @@ int subtest_002(int rank)
 
 	// Create the patch
 	VolOctree *patch_3D = new VolOctree(3, origin, length, dh);
-	patch_3D->setCommunicator(MPI_COMM_WORLD);
 	patch_3D->getVTK().setName("octree_parallel_uniform_patch_3D");
 	patch_3D->initializeAdjacencies();
 	patch_3D->initializeInterfaces();
 	patch_3D->update();
+
+	// Partition the patch
+	patch_3D->initializePartitioning(MPI_COMM_WORLD);
 
 	// Partition the patch
 	patch_3D->partition(true);

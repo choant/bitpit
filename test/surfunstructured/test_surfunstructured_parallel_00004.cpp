@@ -50,7 +50,7 @@ int subtest_001(int rank, SurfUnstructured *patch_2D, SurfUnstructured *patch_2D
 
     patch_2D = new SurfUnstructured(2, 2);
     patch_2D->initializeAdjacencies();
-    patch_2D->setCommunicator(MPI_COMM_WORLD);
+    patch_2D->initializePartitioning(MPI_COMM_WORLD);
     patch_2D->getVTK().setName("surfunstructured_patch_2D");
 
     // Fill the patch
@@ -127,7 +127,7 @@ int subtest_001(int rank, SurfUnstructured *patch_2D, SurfUnstructured *patch_2D
     log::cout() << "Restoring 2D patch..." << std::endl;
 
     patch_2D_restored = new SurfUnstructured();
-    patch_2D_restored->setCommunicator(MPI_COMM_WORLD);
+    patch_2D_restored->initializePartitioning(MPI_COMM_WORLD);
     IBinaryArchive binaryReader2D("surfunstructured_patch_2D.dat", rank);
     patch_2D_restored->restore(binaryReader2D.getStream());
     binaryReader2D.close();
