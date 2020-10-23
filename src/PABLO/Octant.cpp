@@ -237,9 +237,9 @@ Octant::getDim() const{return m_dim;};
 u32array3
 Octant::getLogicalCoordinates() const{
 	u32array3 coords;
-	coords[0] = m_x;
-	coords[1] = m_y;
-	coords[2] = m_z;
+	coords[0] = getLogicalX();
+	coords[1] = getLogicalY();
+	coords[2] = getLogicalZ();
 	return coords;
 };
 
@@ -435,9 +435,9 @@ Octant::getLogicalCenter() const{
 	darray3 center;
 
 	dh = double(getLogicalSize())*0.5;
-	center[0] = (double)m_x + dh;
-	center[1] = (double)m_y + dh;
-	center[2] = (double)m_z + double(m_dim-2)*dh;
+	center[0] = getLogicalX() + dh;
+	center[1] = getLogicalY() + dh;
+	center[2] = getLogicalZ() + double(m_dim-2)*dh;
 	return center;
 };
 
@@ -455,9 +455,9 @@ Octant::getLogicalFaceCenter(uint8_t iface) const{
 	assert(iface < m_dim*2);
 
 	dh_2 = double(getLogicalSize())*0.5;
-	center[0] = (double)m_x + (double)sm_treeConstants[m_dim].faceDisplacements[iface][0] * dh_2;
-	center[1] = (double)m_y + (double)sm_treeConstants[m_dim].faceDisplacements[iface][1] * dh_2;
-	center[2] = (double)m_z + double(m_dim-2) * (double)sm_treeConstants[m_dim].faceDisplacements[iface][2] * dh_2;
+	center[0] = getLogicalX() + (double)sm_treeConstants[m_dim].faceDisplacements[iface][0] * dh_2;
+	center[1] = getLogicalY() + (double)sm_treeConstants[m_dim].faceDisplacements[iface][1] * dh_2;
+	center[2] = getLogicalZ() + double(m_dim-2) * (double)sm_treeConstants[m_dim].faceDisplacements[iface][2] * dh_2;
 
 	return center;
 };
@@ -474,9 +474,9 @@ Octant::getLogicalEdgeCenter(uint8_t iedge) const{
 	darray3 center;
 
 	dh_2 = double(getLogicalSize())*0.5;
-	center[0] = (double)m_x + (double)sm_treeConstants[m_dim].edgeDisplacements[iedge][0] * dh_2;
-	center[1] = (double)m_y + (double)sm_treeConstants[m_dim].edgeDisplacements[iedge][1] * dh_2;
-	center[2] = (double)m_z + double(m_dim-2) * (double)sm_treeConstants[m_dim].edgeDisplacements[iedge][2] * dh_2;
+	center[0] = getLogicalX() + (double)sm_treeConstants[m_dim].edgeDisplacements[iedge][0] * dh_2;
+	center[1] = getLogicalY() + (double)sm_treeConstants[m_dim].edgeDisplacements[iedge][1] * dh_2;
+	center[2] = getLogicalZ() + double(m_dim-2) * (double)sm_treeConstants[m_dim].edgeDisplacements[iedge][2] * dh_2;
 	return center;
 };
 
@@ -494,10 +494,12 @@ Octant::getLogicalNodes(u32arr3vector & nodes) const{
 	dh = getLogicalSize();
 	nodes.resize(nn);
 
+	u32array3 coords = getLogicalCoordinates();
+
 	for (i = 0; i < nn; i++){
-		nodes[i][0] = m_x + uint32_t(sm_treeConstants[m_dim].nodeCoordinates[i][0])*dh;
-		nodes[i][1] = m_y + uint32_t(sm_treeConstants[m_dim].nodeCoordinates[i][1])*dh;
-		nodes[i][2] = m_z + uint32_t(sm_treeConstants[m_dim].nodeCoordinates[i][2])*dh;
+		nodes[i][0] = coords[0] + uint32_t(sm_treeConstants[m_dim].nodeCoordinates[i][0])*dh;
+		nodes[i][1] = coords[1] + uint32_t(sm_treeConstants[m_dim].nodeCoordinates[i][1])*dh;
+		nodes[i][2] = coords[2] + uint32_t(sm_treeConstants[m_dim].nodeCoordinates[i][2])*dh;
 	}
 };
 
@@ -514,10 +516,12 @@ Octant::getLogicalNodes() const{
 	dh = getLogicalSize();
 	nodes.resize(nn);
 
+	u32array3 coords = getLogicalCoordinates();
+
 	for (i = 0; i < nn; i++){
-		nodes[i][0] = m_x + sm_treeConstants[m_dim].nodeCoordinates[i][0]*dh;
-		nodes[i][1] = m_y + sm_treeConstants[m_dim].nodeCoordinates[i][1]*dh;
-		nodes[i][2] = m_z + sm_treeConstants[m_dim].nodeCoordinates[i][2]*dh;
+		nodes[i][0] = coords[0] + sm_treeConstants[m_dim].nodeCoordinates[i][0]*dh;
+		nodes[i][1] = coords[1] + sm_treeConstants[m_dim].nodeCoordinates[i][1]*dh;
+		nodes[i][2] = coords[2] + sm_treeConstants[m_dim].nodeCoordinates[i][2]*dh;
 	}
 
 	return nodes;
@@ -531,9 +535,12 @@ void		Octant::getLogicalNode(u32array3 & node, uint8_t inode) const{
 	uint32_t	dh;
 
 	dh = getLogicalSize();
-	node[0] = m_x + sm_treeConstants[m_dim].nodeCoordinates[inode][0]*dh;
-	node[1] = m_y + sm_treeConstants[m_dim].nodeCoordinates[inode][1]*dh;
-	node[2] = m_z + sm_treeConstants[m_dim].nodeCoordinates[inode][2]*dh;
+
+	node = getLogicalCoordinates();
+
+	node[0] += sm_treeConstants[m_dim].nodeCoordinates[inode][0]*dh;
+	node[1] += sm_treeConstants[m_dim].nodeCoordinates[inode][1]*dh;
+	node[2] += sm_treeConstants[m_dim].nodeCoordinates[inode][2]*dh;
 
 };
 
@@ -542,13 +549,15 @@ void		Octant::getLogicalNode(u32array3 & node, uint8_t inode) const{
  * \return Array[3] with the logical coordinates of the node of the octant.
  */
 u32array3		Octant::getLogicalNode(uint8_t inode) const{
-	u32array3 	node;
 	uint32_t	dh;
 
 	dh = getLogicalSize();
-	node[0] = m_x + sm_treeConstants[m_dim].nodeCoordinates[inode][0]*dh;
-	node[1] = m_y + sm_treeConstants[m_dim].nodeCoordinates[inode][1]*dh;
-	node[2] = m_z + sm_treeConstants[m_dim].nodeCoordinates[inode][2]*dh;
+
+	u32array3 node = getLogicalCoordinates();
+
+	node[0] += sm_treeConstants[m_dim].nodeCoordinates[inode][0]*dh;
+	node[1] += sm_treeConstants[m_dim].nodeCoordinates[inode][1]*dh;
+	node[2] += sm_treeConstants[m_dim].nodeCoordinates[inode][2]*dh;
 	return node;
 };
 
@@ -599,7 +608,7 @@ uint64_t	Octant::computeFatherMorton() const {
  * of this octant.
  */
 u32array3	Octant::computeFatherCoordinates() const {
-	u32array3 fatherCoordinates = {{m_x, m_y, m_z}};
+	u32array3 fatherCoordinates = getLogicalCoordinates();
 	for (int i=0; i<m_dim; i++){
 		fatherCoordinates[i] -= fatherCoordinates[i]%(uint32_t(1) << (TreeConstants::MAX_LEVEL - max(0,(m_level-1))));
 	}
@@ -639,11 +648,12 @@ unsigned int Octant::getBinarySize()
  * \return Last descendant octant.
  */
 Octant	Octant::buildLastDesc() const {
-	u32array3 delta = { {0,0,0} };
+	u32array3 lastDescCoords = getLogicalCoordinates();
 	for (int i=0; i<m_dim; i++){
-		delta[i] = (uint32_t(1) << (TreeConstants::MAX_LEVEL - m_level)) - 1;
+		lastDescCoords[i] += (uint32_t(1) << (TreeConstants::MAX_LEVEL - m_level)) - 1;
 	}
-	Octant last_desc(m_dim, TreeConstants::MAX_LEVEL, (m_x+delta[0]), (m_y+delta[1]), (m_z+delta[2]));
+
+	Octant last_desc(m_dim, TreeConstants::MAX_LEVEL, lastDescCoords[0], lastDescCoords[1], lastDescCoords[2]);
 	return last_desc;
 };
 
@@ -667,13 +677,20 @@ vector< Octant >	Octant::buildChildren() const {
 	uint8_t xf,yf,zf;
 	int nchildren = 1<<m_dim;
 
+	uint32_t dh = 0.5 * getLogicalSize();
+	u32array3 coords = getLogicalCoordinates();
 	if (this->m_level < TreeConstants::MAX_LEVEL){
 		vector< Octant > children(nchildren, Octant(m_dim));
 		for (int i=0; i<nchildren; i++){
 			switch (i) {
 			case 0 :
 			{
+				u32array3 childCoords = coords;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
@@ -687,12 +704,16 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 1 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[0] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_x += dh;
 				// Update interior face bound and pbound
 				xf=0; yf=3; zf=5;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -703,12 +724,16 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 2 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[1] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_y += dh;
 				// Update interior face bound and pbound
 				xf=1; yf=2; zf=5;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -719,13 +744,17 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 3 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[0] += dh;
+				childCoords[1] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_x += dh;
-				oct.m_y += dh;
 				// Update interior face bound and pbound
 				xf=0; yf=2; zf=5;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -736,12 +765,16 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 4 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[2] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_z += dh;
 				// Update interior face bound and pbound
 				xf=1; yf=3; zf=4;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -752,13 +785,17 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 5 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[0] += dh;
+				childCoords[2] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_x += dh;
-				oct.m_z += dh;
 				// Update interior face bound and pbound
 				xf=0; yf=3; zf=4;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -769,13 +806,17 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 6 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[1] += dh;
+				childCoords[2] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_y += dh;
-				oct.m_z += dh;
 				// Update interior face bound and pbound
 				xf=1; yf=2; zf=4;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -786,14 +827,18 @@ vector< Octant >	Octant::buildChildren() const {
 			break;
 			case 7 :
 			{
+				u32array3 childCoords = coords;
+				childCoords[0] += dh;
+				childCoords[1] += dh;
+				childCoords[2] += dh;
+
 				Octant oct(*this);
+				oct.m_x = childCoords[0];
+				oct.m_y = childCoords[1];
+				oct.m_z = childCoords[2];
 				oct.setMarker(max(0,oct.m_marker-1));
 				oct.setLevel(oct.m_level+1);
 				oct.m_info[OctantInfo::INFO_NEW4REFINEMENT]=true;
-				uint32_t dh = oct.getLogicalSize();
-				oct.m_x += dh;
-				oct.m_y += dh;
-				oct.m_z += dh;
 				// Update interior face bound and pbound
 				xf=0; yf=2; zf=4;
 				oct.m_info[xf] = oct.m_info[xf+6] = false;
@@ -831,15 +876,17 @@ void Octant::computeHalfSizeMortons(uint8_t iface, uint32_t *nMortons, std::vect
 	*nMortons = (m_level < TreeConstants::MAX_LEVEL) ? nchildren/2 : 1;
 	mortons->resize(*nMortons);
 
+	u32array3 coords = getLogicalCoordinates();
+
 	uint32_t dh  = (m_level < TreeConstants::MAX_LEVEL) ? getLogicalSize()/2 : getLogicalSize();
 	uint32_t dh2 = getLogicalSize();
 	switch (iface) {
 	case 0 :
 	{
-		uint32_t x = m_x - dh;
+		uint32_t x = coords[0] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + ((i == 1) || (i == 3)) * dh;
-			uint32_t z = m_z + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
+			uint32_t y = coords[1] + ((i == 1) || (i == 3)) * dh;
+			uint32_t z = coords[2] + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -847,10 +894,10 @@ void Octant::computeHalfSizeMortons(uint8_t iface, uint32_t *nMortons, std::vect
 	break;
 	case 1 :
 	{
-		uint32_t x = m_x + dh2;
+		uint32_t x = coords[0] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + ((i == 1) || (i == 3)) * dh;
-			uint32_t z = m_z + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
+			uint32_t y = coords[1] + ((i == 1) || (i == 3)) * dh;
+			uint32_t z = coords[2] + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -858,10 +905,10 @@ void Octant::computeHalfSizeMortons(uint8_t iface, uint32_t *nMortons, std::vect
 	break;
 	case 2 :
 	{
-		uint32_t y = m_y - dh;
+		uint32_t y = coords[1] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + ((i == 1) || (i == 3)) * dh;
-			uint32_t z = m_z + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
+			uint32_t x = coords[0] + ((i == 1) || (i == 3)) * dh;
+			uint32_t z = coords[2] + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -869,10 +916,10 @@ void Octant::computeHalfSizeMortons(uint8_t iface, uint32_t *nMortons, std::vect
 	break;
 	case 3 :
 	{
-		uint32_t y = m_y + dh2;
+		uint32_t y = coords[1] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + ((i == 1) || (i == 3)) * dh;
-			uint32_t z = m_z + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
+			uint32_t x = coords[0] + ((i == 1) || (i == 3)) * dh;
+			uint32_t z = coords[2] + ((m_dim  ==  3) && ((i == 2) || (i == 3))) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -880,10 +927,10 @@ void Octant::computeHalfSizeMortons(uint8_t iface, uint32_t *nMortons, std::vect
 	break;
 	case 4 :
 	{
-		uint32_t z = m_z - dh;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + ((i == 1) || (i == 3)) * dh;
-			uint32_t y = m_y + ((i == 2) || (i == 3)) * dh;
+			uint32_t x = coords[0] + ((i == 1) || (i == 3)) * dh;
+			uint32_t y = coords[1] + ((i == 2) || (i == 3)) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -891,10 +938,10 @@ void Octant::computeHalfSizeMortons(uint8_t iface, uint32_t *nMortons, std::vect
 	break;
 	case 5 :
 	{
-		uint32_t z = m_z + dh2;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + ((i == 1) || (i == 3)) * dh;
-			uint32_t y = m_y + ((i == 2) || (i == 3)) * dh;
+			uint32_t x = coords[0] + ((i == 1) || (i == 3)) * dh;
+			uint32_t y = coords[1] + ((i == 2) || (i == 3)) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -922,16 +969,18 @@ void Octant::computeMinSizeMortons(uint8_t iface, uint8_t maxdepth, uint32_t *nM
 	*nMortons = (m_level < TreeConstants::MAX_LEVEL) ? uint32_t(1)<<((m_dim-1)*(maxdepth-m_level)) : 1;
 	mortons->resize(*nMortons);
 
+	u32array3 coords = getLogicalCoordinates();
+
 	uint32_t dh    = (m_level < TreeConstants::MAX_LEVEL) ? uint32_t(1)<<(TreeConstants::MAX_LEVEL - maxdepth) : getLogicalSize();
 	uint32_t dh2   = getLogicalSize();
 	uint32_t nline = uint32_t(1)<<(maxdepth-m_level);
 	switch (iface) {
 	case 0 :
 	{
-		uint32_t x = m_x - dh;
+		uint32_t x = coords[0] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + ((m_dim == 2) * (i % nline) + (m_dim - 2) * (i / nline)) * dh;
-			uint32_t z = m_z + (m_dim - 2) * (i % nline) * dh;
+			uint32_t y = coords[1] + ((m_dim == 2) * (i % nline) + (m_dim - 2) * (i / nline)) * dh;
+			uint32_t z = coords[2] + (m_dim - 2) * (i % nline) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -939,10 +988,10 @@ void Octant::computeMinSizeMortons(uint8_t iface, uint8_t maxdepth, uint32_t *nM
 	break;
 	case 1 :
 	{
-		uint32_t x = m_x + dh2;
+		uint32_t x = coords[0] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + ((m_dim == 2) * (i % nline) + (m_dim - 2) * (i / nline)) * dh;
-			uint32_t z = m_z + (m_dim - 2) * (i % nline) * dh;
+			uint32_t y = coords[1] + ((m_dim == 2) * (i % nline) + (m_dim - 2) * (i / nline)) * dh;
+			uint32_t z = coords[2] + (m_dim - 2) * (i % nline) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -950,10 +999,10 @@ void Octant::computeMinSizeMortons(uint8_t iface, uint8_t maxdepth, uint32_t *nM
 	break;
 	case 2 :
 	{
-		uint32_t y = m_y - dh;
+		uint32_t y = coords[1] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + ((m_dim == 2) * (i % nline) + (m_dim - 2) * (i / nline)) * dh;
-			uint32_t z = m_z + (m_dim - 2) * (i % nline) * dh;
+			uint32_t x = coords[0] + ((m_dim == 2) * (i % nline) + (m_dim - 2) * (i / nline)) * dh;
+			uint32_t z = coords[2] + (m_dim - 2) * (i % nline) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -961,10 +1010,10 @@ void Octant::computeMinSizeMortons(uint8_t iface, uint8_t maxdepth, uint32_t *nM
 	break;
 	case 3 :
 	{
-		uint32_t y = m_y + dh2;
+		uint32_t y = coords[1] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + ((m_dim == 2) * (i%nline) + (m_dim - 2) * (i / nline)) * dh;
-			uint32_t z = m_z + (m_dim - 2) * (i%nline) * dh;
+			uint32_t x = coords[0] + ((m_dim == 2) * (i%nline) + (m_dim - 2) * (i / nline)) * dh;
+			uint32_t z = coords[2] + (m_dim - 2) * (i%nline) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -972,10 +1021,10 @@ void Octant::computeMinSizeMortons(uint8_t iface, uint8_t maxdepth, uint32_t *nM
 	break;
 	case 4 :
 	{
-		uint32_t z = m_z - dh;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + (i / nline) * dh;
-			uint32_t y = m_y + (i % nline) * dh;
+			uint32_t x = coords[0] + (i / nline) * dh;
+			uint32_t y = coords[1] + (i % nline) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -983,10 +1032,10 @@ void Octant::computeMinSizeMortons(uint8_t iface, uint8_t maxdepth, uint32_t *nM
 	break;
 	case 5 :
 	{
-		uint32_t z = m_z + dh2;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + (i / nline) * dh;
-			uint32_t y = m_y + (i % nline) * dh;
+			uint32_t x = coords[0] + (i / nline) * dh;
+			uint32_t y = coords[1] + (i % nline) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1034,16 +1083,18 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	*nMortons = (m_level < TreeConstants::MAX_LEVEL) ? 2 : 1;
 	mortons->resize(*nMortons);
 
+	u32array3 coords = getLogicalCoordinates();
+
 	uint32_t dh = (m_level < TreeConstants::MAX_LEVEL) ? getLogicalSize()/2 : getLogicalSize();
 	uint32_t dh2 = getLogicalSize();
 
 	switch (iedge) {
 	case 0 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t z = m_z - dh;
+		uint32_t x = coords[0] - dh;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + (i == 1) * dh;
+			uint32_t y = coords[1] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1051,10 +1102,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 1 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t z = m_z - dh;
+		uint32_t x = coords[0] + dh2;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + (i == 1) * dh;
+			uint32_t y = coords[1] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1062,10 +1113,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 2 :
 	{
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z - dh;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + (i == 1) * dh;
+			uint32_t x = coords[0] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1073,10 +1124,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 3 :
 	{
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z - dh;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + (i == 1) * dh;
+			uint32_t x = coords[0] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1084,10 +1135,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 4 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y - dh;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + (i == 1) * dh;
+			uint32_t z = coords[2] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1095,10 +1146,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 5 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y - dh;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + (i == 1) * dh;
+			uint32_t z = coords[2] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1106,10 +1157,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 6 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y + dh2;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + (i == 1) * dh;
+			uint32_t z = coords[2] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1117,10 +1168,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 7 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y + dh2;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + (i == 1) * dh;
+			uint32_t z = coords[2] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1128,10 +1179,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 8 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] - dh;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + (i == 1) * dh;
+			uint32_t y = coords[1] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1139,10 +1190,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 9 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] + dh2;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + (i == 1) * dh;
+			uint32_t y = coords[1] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1150,10 +1201,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 10 :
 	{
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z + dh2;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + (i == 1) * dh;
+			uint32_t x = coords[0] + (i == 1) * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1161,10 +1212,10 @@ void Octant::computeEdgeHalfSizeMortons(uint8_t iedge, const uint8_t (&edgeface)
 	break;
 	case 11 :
 	{
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z + dh2;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + (i == 1) *  dh;
+			uint32_t x = coords[0] + (i == 1) *  dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1195,25 +1246,27 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	*nMortons = (m_level < TreeConstants::MAX_LEVEL) ? uint32_t(1)<<(maxdepth-m_level) : 1;
 	mortons->resize(*nMortons);
 
+	u32array3 coords = getLogicalCoordinates();
+
 	uint32_t dh = (m_level < TreeConstants::MAX_LEVEL) ? uint32_t(1)<<(TreeConstants::MAX_LEVEL - maxdepth) : getLogicalSize();
 	uint32_t dh2 = getLogicalSize();
 	switch (iedge) {
 	case 0 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t z = m_z - dh;
+		uint32_t x = coords[0] - dh;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + i * dh;
+			uint32_t y = coords[1] + i * dh;
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
 	}
 	break;
 	case 1 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t z = m_z - dh;
+		uint32_t x = coords[0] + dh2;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + i * dh;
+			uint32_t y = coords[1] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1221,10 +1274,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 2 :
 	{
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z - dh;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + i * dh;
+			uint32_t x = coords[0] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1232,10 +1285,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 3 :
 	{
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z - dh;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + i * dh;
+			uint32_t x = coords[0] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1243,10 +1296,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 4 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y - dh;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + i * dh;
+			uint32_t z = coords[2] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1254,10 +1307,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 5 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y - dh;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] - dh;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + i * dh;
+			uint32_t z = coords[2] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1265,10 +1318,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 6 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y + dh2;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + i * dh;
+			uint32_t z = coords[2] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1276,10 +1329,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 7 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y + dh2;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t z = m_z + i * dh;
+			uint32_t z = coords[2] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1287,10 +1340,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 8 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] - dh;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + i * dh;
+			uint32_t y = coords[1] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1298,10 +1351,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 9 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] + dh2;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t y = m_y + i * dh;
+			uint32_t y = coords[1] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1309,10 +1362,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 10 :
 	{
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z + dh2;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + i * dh;
+			uint32_t x = coords[0] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1320,10 +1373,10 @@ void Octant::computeEdgeMinSizeMortons(uint8_t iedge, uint8_t maxdepth, const ui
 	break;
 	case 11 :
 	{
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z + dh2;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] + dh2;
 		for (uint32_t i = 0; i < *nMortons; ++i) {
-			uint32_t x = m_x + i * dh;
+			uint32_t x = coords[0] + i * dh;
 
 			(*mortons)[i] = PABLO::computeMorton(x, y, z);
 		}
@@ -1375,77 +1428,79 @@ void Octant::computeNodeMinSizeMorton(uint8_t inode, uint8_t maxdepth, const uin
 
 	*hasMorton = true;
 
+	u32array3 coords = getLogicalCoordinates();
+
 	uint32_t dh  = (m_level < TreeConstants::MAX_LEVEL) ? uint32_t(1)<<(TreeConstants::MAX_LEVEL - maxdepth) : getLogicalSize();
 	uint32_t dh2 = getLogicalSize();
 	switch (inode) {
 	case 0 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z - (m_dim - 2) * dh;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] - (m_dim - 2) * dh;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 1 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z - (m_dim - 2) * dh;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] - (m_dim - 2) * dh;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 2 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z - (m_dim - 2) * dh;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] - (m_dim - 2) * dh;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 3 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z - (m_dim - 2) * dh;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] - (m_dim - 2) * dh;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 4 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] + dh2;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 5 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y - dh;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] - dh;
+		uint32_t z = coords[2] + dh2;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 6 :
 	{
-		uint32_t x = m_x - dh;
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] - dh;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] + dh2;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
 	break;
 	case 7 :
 	{
-		uint32_t x = m_x + dh2;
-		uint32_t y = m_y + dh2;
-		uint32_t z = m_z + dh2;
+		uint32_t x = coords[0] + dh2;
+		uint32_t y = coords[1] + dh2;
+		uint32_t z = coords[2] + dh2;
 
 		*morton = PABLO::computeMorton(x, y, z);
 	}
@@ -1480,6 +1535,8 @@ uint64_t Octant::computePeriodicMorton(uint8_t iface) const {
 	dh = getLogicalSize();
 	uint32_t maxLength = uint32_t(1)<<TreeConstants::MAX_LEVEL;
 
+	u32array3 coords = getLogicalCoordinates();
+
 	if (!m_info[iface]){
 		return this->computeMorton();
 	}
@@ -1487,32 +1544,32 @@ uint64_t Octant::computePeriodicMorton(uint8_t iface) const {
 		switch (iface) {
 		case 0 :
 		{
-			Morton = PABLO::computeMorton(maxLength-dh,this->m_y,this->m_z);
+			Morton = PABLO::computeMorton(maxLength-dh,coords[1],coords[2]);
 		}
 		break;
 		case 1 :
 		{
-			Morton = PABLO::computeMorton(0,this->m_y,this->m_z);
+			Morton = PABLO::computeMorton(0,coords[1],coords[2]);
 		}
 		break;
 		case 2 :
 		{
-			Morton = PABLO::computeMorton(this->m_x,maxLength-dh,this->m_z);
+			Morton = PABLO::computeMorton(coords[0],maxLength-dh,coords[2]);
 		}
 		break;
 		case 3 :
 		{
-			Morton = PABLO::computeMorton(this->m_x,0,this->m_z);
+			Morton = PABLO::computeMorton(coords[0],0,coords[2]);
 		}
 		break;
 		case 4 :
 		{
-			Morton = PABLO::computeMorton(this->m_x,this->m_y,maxLength-dh);
+			Morton = PABLO::computeMorton(coords[0],coords[1],maxLength-dh);
 		}
 		break;
 		case 5 :
 		{
-			Morton = PABLO::computeMorton(this->m_x,this->m_y,0);
+			Morton = PABLO::computeMorton(coords[0],coords[1],0);
 		}
 		break;
 		default:
@@ -1527,10 +1584,10 @@ uint64_t Octant::computePeriodicMorton(uint8_t iface) const {
  * may be not living in octree).
  */
 Octant Octant::computePeriodicOctant(uint8_t iface) const {
-	Octant degOct(this->m_dim, this->m_level, this->m_x, this->m_y, this->m_z);
 	uint32_t maxLength = uint32_t(1)<<TreeConstants::MAX_LEVEL;
 	uint32_t dh = this->getLogicalSize();
 
+	u32array3 periodicCoords = getLogicalCoordinates();
 	if (!m_info[iface]){
 		return *this;
 	}
@@ -1538,36 +1595,37 @@ Octant Octant::computePeriodicOctant(uint8_t iface) const {
 		switch (iface) {
 		case 0 :
 		{
-			degOct.m_x = maxLength-dh;
+			periodicCoords[0] = maxLength-dh;
 		}
 		break;
 		case 1 :
 		{
-			degOct.m_x = 0;
+			periodicCoords[0] = 0;
 		}
 		break;
 		case 2 :
 		{
-			degOct.m_y = maxLength-dh;
+			periodicCoords[1] = maxLength-dh;
 		}
 		break;
 		case 3 :
 		{
-			degOct.m_y = 0;
+			periodicCoords[1] = 0;
 		}
 		break;
 		case 4 :
 		{
-			degOct.m_z = maxLength-dh;
+			periodicCoords[2] = maxLength-dh;
 		}
 		break;
 		case 5 :
 		{
-			degOct.m_z = 0;
+			periodicCoords[2] = 0;
 		}
 		break;
 		}
-		degOct.m_level = this->m_level;
+
+		Octant degOct(m_dim, m_level, periodicCoords[0], periodicCoords[1], periodicCoords[2]);
 		degOct.m_info = false;
 		return degOct;
 	}
@@ -1580,7 +1638,6 @@ Octant Octant::computePeriodicOctant(uint8_t iface) const {
  * \param[in] inode Local index of the node target.
  */
 Octant Octant::computeNodePeriodicOctant(uint8_t inode) const {
-    Octant degOct(this->m_dim, this->m_level, this->m_x, this->m_y, this->m_z);
     uint32_t maxLength = sm_treeConstants[m_dim].MAX_LENGTH;
     uint32_t dh = this->getLogicalSize();
 
@@ -1588,6 +1645,7 @@ Octant Octant::computeNodePeriodicOctant(uint8_t inode) const {
     uint8_t iface2 = sm_treeConstants[m_dim].nodeFace[inode][1];
     uint8_t iface3 = sm_treeConstants[m_dim].nodeFace[inode][m_dim-1];
 
+    u32array3 periodicCoords = getLogicalCoordinates();
     if (!m_info[iface1] && !m_info[iface2] && !m_info[iface3]){
         return *this;
     }
@@ -1596,20 +1654,20 @@ Octant Octant::computeNodePeriodicOctant(uint8_t inode) const {
         case 0 :
         {
             if (m_info[OctantInfo::INFO_BOUNDFACE0]){
-                degOct.m_x = maxLength-dh;
+                periodicCoords[0] = maxLength-dh;
             }
             else{
-                degOct.m_x -= dh;
+                periodicCoords[0] -= dh;
             }
         }
         break;
         case 1 :
         {
             if (m_info[OctantInfo::INFO_BOUNDFACE1]){
-                degOct.m_x = 0;
+                periodicCoords[0] = 0;
             }
             else{
-                degOct.m_x += dh;
+                periodicCoords[0] += dh;
             }
         }
         break;
@@ -1619,20 +1677,20 @@ Octant Octant::computeNodePeriodicOctant(uint8_t inode) const {
         case 2 :
         {
             if (m_info[OctantInfo::INFO_BOUNDFACE2]){
-                degOct.m_y = maxLength-dh;
+                periodicCoords[1] = maxLength-dh;
             }
             else{
-                degOct.m_y -= dh;
+                periodicCoords[1] -= dh;
             }
         }
         break;
         case 3 :
         {
             if (m_info[OctantInfo::INFO_BOUNDFACE3]){
-                degOct.m_y = 0;
+                periodicCoords[1] = 0;
             }
             else{
-                degOct.m_y += dh;
+                periodicCoords[1] += dh;
             }
         }
         break;
@@ -1642,26 +1700,26 @@ Octant Octant::computeNodePeriodicOctant(uint8_t inode) const {
         case 4 :
         {
             if (m_info[OctantInfo::INFO_BOUNDFACE4]){
-                degOct.m_z = maxLength-dh;
+                periodicCoords[2] = maxLength-dh;
             }
             else{
-                degOct.m_z -= dh;
+                periodicCoords[2] -= dh;
             }
         }
         break;
         case 5 :
         {
             if (m_info[OctantInfo::INFO_BOUNDFACE5]){
-                degOct.m_z = 0;
+                periodicCoords[2] = 0;
             }
             else{
-                degOct.m_z += dh;
+                periodicCoords[2] += dh;
             }
         }
         break;
         }
 
-        degOct.m_level = this->m_level;
+        Octant degOct(m_dim, m_level, periodicCoords[0], periodicCoords[1], periodicCoords[2]);
         degOct.m_info = false;
         return degOct;
     }
@@ -1674,7 +1732,6 @@ Octant Octant::computeNodePeriodicOctant(uint8_t inode) const {
  * \param[in] iedge Local index of the edge target.
  */
 Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
-    Octant degOct(this->m_dim, this->m_level, this->m_x, this->m_y, this->m_z);
     uint32_t maxLength = uint32_t(1)<<TreeConstants::MAX_LEVEL;
     uint32_t dh = this->getLogicalSize();
 
@@ -1687,6 +1744,7 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
         cxyz[idim] = sm_treeConstants[m_dim].edgeCoeffs[iedge][idim];
     }
 
+    u32array3 periodicCoords = getLogicalCoordinates();
     if (!m_info[iface[0]] && !m_info[iface[1]]){
         return *this;
     }
@@ -1696,10 +1754,10 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
             case 0 :
                 if (cxyz[0] != 0){
                     if (m_info[OctantInfo::INFO_BOUNDFACE0]){
-                        degOct.m_x = maxLength-dh;
+                        periodicCoords[0] = maxLength-dh;
                     }
                     else{
-                        degOct.m_x -= dh;
+                        periodicCoords[0] -= dh;
                     }
                 }
                 break;
@@ -1707,10 +1765,10 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
             {
                 if (cxyz[0] != 0){
                     if (m_info[OctantInfo::INFO_BOUNDFACE1]){
-                        degOct.m_x = 0;
+                        periodicCoords[0] = 0;
                     }
                     else{
-                        degOct.m_x += dh;
+                        periodicCoords[0] += dh;
                     }
                 }
             }
@@ -1719,10 +1777,10 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
             {
                 if (cxyz[1] != 0){
                     if (m_info[OctantInfo::INFO_BOUNDFACE2]){
-                        degOct.m_y = maxLength-dh;
+                        periodicCoords[1] = maxLength-dh;
                     }
                     else{
-                        degOct.m_y -= dh;
+                        periodicCoords[1] -= dh;
                     }
                 }
             }
@@ -1731,10 +1789,10 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
             {
                 if (cxyz[1] != 0){
                     if (m_info[OctantInfo::INFO_BOUNDFACE3]){
-                        degOct.m_y = 0;
+                        periodicCoords[1] = 0;
                     }
                     else{
-                        degOct.m_y += dh;
+                        periodicCoords[1] += dh;
                     }
                 }
             }
@@ -1743,10 +1801,10 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
             {
                 if (cxyz[2] != 0){
                     if (m_info[OctantInfo::INFO_BOUNDFACE4]){
-                        degOct.m_z = maxLength-dh;
+                        periodicCoords[2] = maxLength-dh;
                     }
                     else{
-                        degOct.m_z -= dh;
+                        periodicCoords[2] -= dh;
                     }
                 }
             }
@@ -1755,17 +1813,18 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
             {
                 if (cxyz[2] != 0){
                     if (m_info[OctantInfo::INFO_BOUNDFACE5]){
-                        degOct.m_z = 0;
+                        periodicCoords[2] = 0;
                     }
                     else{
-                        degOct.m_z += dh;
+                        periodicCoords[2] += dh;
                     }
                 }
             }
             break;
             }
         } // end loop on i
-        degOct.m_level = this->m_level;
+
+        Octant degOct(m_dim, m_level, periodicCoords[0], periodicCoords[1], periodicCoords[2]);
         degOct.m_info = false;
         return degOct;
     }
@@ -1780,9 +1839,9 @@ Octant Octant::computeEdgePeriodicOctant(uint8_t iedge) const {
  */
 array<int64_t,3> Octant::getPeriodicCoord(uint8_t iface) const {
 	array<int64_t,3> coord;
-	coord[0] = this->m_x;
-	coord[1] = this->m_y;
-	coord[2] = this->m_z;
+	coord[0] = getLogicalX();
+	coord[1] = getLogicalY();
+	coord[2] = getLogicalZ();
 	int64_t dh = this->getLogicalSize();
 	int64_t maxLength = int64_t(1)<<TreeConstants::MAX_LEVEL;
 
@@ -1830,9 +1889,9 @@ array<int64_t,3> Octant::getPeriodicCoord(uint8_t iface) const {
  */
 array<int64_t,3> Octant::getNodePeriodicCoord(uint8_t inode) const {
     array<int64_t,3> coord;
-    coord[0] = this->m_x;
-    coord[1] = this->m_y;
-    coord[2] = this->m_z;
+    coord[0] = getLogicalX();
+    coord[1] = getLogicalY();
+    coord[2] = getLogicalZ();
     int64_t dh = this->getLogicalSize();
     int64_t maxLength = int64_t(1)<<TreeConstants::MAX_LEVEL;
 
@@ -1903,9 +1962,9 @@ array<int64_t,3> Octant::getNodePeriodicCoord(uint8_t inode) const {
  */
 array<int64_t,3> Octant::getEdgePeriodicCoord(uint8_t iedge) const {
     array<int64_t,3> coord;
-    coord[0] = this->m_x;
-    coord[1] = this->m_y;
-    coord[2] = this->m_z;
+    coord[0] = getLogicalX();
+    coord[1] = getLogicalY();
+    coord[2] = getLogicalZ();
     int64_t dh = this->getLogicalSize();
     int64_t maxLength = int64_t(1)<<TreeConstants::MAX_LEVEL;
 
@@ -1986,13 +2045,11 @@ array<int64_t,3> Octant::getEdgePeriodicCoord(uint8_t iedge) const {
  */
 uint8_t Octant::getFamilySplittingNode() const {
 
-	bool delta[3];
-	uint32_t xx[3];
-	xx[0] = m_x;
-	xx[1] = m_y;
-	xx[2] = m_z;
-	delta[2] = 0;
+	u32array3 xx = getLogicalCoordinates();
+
 	//Delta to build father (use the boolean negation to identify the splitting node)
+	bool delta[3];
+	delta[2] = 0;
 	for (int i=0; i<m_dim; i++){
 		delta[i] = ((xx[i]%(uint32_t(1) << (TreeConstants::MAX_LEVEL - max(0,(m_level-1))))) == 0);
 	}
