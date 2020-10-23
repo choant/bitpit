@@ -237,9 +237,9 @@ namespace bitpit {
             octvector::const_iterator lastOctant = m_octants.end() - 1;
             uint32_t x,y,z,delta;
             delta = (uint32_t)(1<<((uint8_t)TreeConstants::MAX_LEVEL - lastOctant->m_level)) - 1;
-            x = lastOctant->m_x + delta;
-            y = lastOctant->m_y + delta;
-            z = lastOctant->m_z + (m_dim-2)*delta;
+            x = lastOctant->getLogicalX() + delta;
+            y = lastOctant->getLogicalY() + delta;
+            z = lastOctant->getLogicalZ() + (m_dim-2)*delta;
             Octant lastDesc = Octant(m_dim, TreeConstants::MAX_LEVEL,x,y,z);
             m_lastDescMorton = lastDesc.computeMorton();
         }
@@ -926,7 +926,12 @@ namespace bitpit {
             samesizeoct = oct->computePeriodicOctant(iface);
         }
         else{
-            samesizeoct = Octant(m_dim, level, int32_t(oct->m_x)+int32_t(cxyz[0]*size), int32_t(oct->m_y)+int32_t(cxyz[1]*size), int32_t(oct->m_z)+int32_t(cxyz[2]*size));
+            u32array3 sameSizeCoords = oct->getLogicalCoordinates();
+            sameSizeCoords[0] += cxyz[0] * size;
+            sameSizeCoords[1] += cxyz[1] * size;
+            sameSizeCoords[2] += cxyz[2] * size;
+
+            samesizeoct = Octant(m_dim, level, sameSizeCoords[0], sameSizeCoords[1], sameSizeCoords[2]);
         }
 
         uint64_t samesizemorton = samesizeoct.computeMorton();
@@ -1179,7 +1184,12 @@ namespace bitpit {
             samesizeoct = oct->computeEdgePeriodicOctant(iedge);
         }
         else{
-            samesizeoct = Octant(m_dim, level, oct->m_x+cxyz[0]*size, oct->m_y+cxyz[1]*size, oct->m_z+cxyz[2]*size);
+            u32array3 sameSizeCoords = oct->getLogicalCoordinates();
+            sameSizeCoords[0] += cxyz[0] * size;
+            sameSizeCoords[1] += cxyz[1] * size;
+            sameSizeCoords[2] += cxyz[2] * size;
+
+            samesizeoct = Octant(m_dim, level, sameSizeCoords[0], sameSizeCoords[1], sameSizeCoords[2]);
         }
 
         uint64_t samesizemorton = samesizeoct.computeMorton();
@@ -1413,7 +1423,12 @@ namespace bitpit {
             samesizeoct = oct->computeNodePeriodicOctant(inode);
         }
         else{
-            samesizeoct = Octant(m_dim, oct->m_level, oct->m_x+cxyz[0]*size, oct->m_y+cxyz[1]*size, oct->m_z+cxyz[2]*size);
+            u32array3 sameSizeCoords = oct->getLogicalCoordinates();
+            sameSizeCoords[0] += cxyz[0] * size;
+            sameSizeCoords[1] += cxyz[1] * size;
+            sameSizeCoords[2] += cxyz[2] * size;
+
+            samesizeoct = Octant(m_dim, level, sameSizeCoords[0], sameSizeCoords[1], sameSizeCoords[2]);
         }
 
         uint64_t samesizemorton = samesizeoct.computeMorton();
