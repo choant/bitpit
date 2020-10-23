@@ -1470,7 +1470,7 @@ namespace bitpit {
      */
     uint64_t
     ParaTree::getMorton(uint32_t idx) const {
-        return m_octree.computeMorton(idx);
+        return m_octree.getMorton(idx);
     };
 
     /** Compute the persistent XYZ key of the specified node of an octant (without
@@ -1920,7 +1920,7 @@ namespace bitpit {
      */
     uint64_t
     ParaTree::getMorton(const Octant* oct) const {
-        return oct->computeMorton();
+        return oct->getMorton();
     };
 
     /*!Get the morton index of the last possible descendant with maximum refinement level of a target octant.
@@ -1929,7 +1929,7 @@ namespace bitpit {
      */
     uint64_t
     ParaTree::getLastDescMorton(const Octant* oct) const {
-        return oct->buildLastDesc().computeMorton();
+        return oct->buildLastDesc().getMorton();
     };
 
     /** Compute the persistent XYZ key of the specified node of an octant (without
@@ -2016,10 +2016,10 @@ namespace bitpit {
     ParaTree::getIdx(const Octant* oct) const {
 #if BITPIT_ENABLE_MPI==1
         if (getIsGhost(oct)){
-            return m_octree.findGhostMorton(oct->computeMorton());
+            return m_octree.findGhostMorton(oct->getMorton());
         }
 #endif
-        return m_octree.findMorton(oct->computeMorton());
+        return m_octree.findMorton(oct->getMorton());
     };
 
     /*! Get the global index of an octant.
@@ -2176,7 +2176,7 @@ namespace bitpit {
      */
     uint64_t
     ParaTree::getLastDescMorton(uint32_t idx) const {
-        return m_octree.m_octants[idx].buildLastDesc().computeMorton();
+        return m_octree.m_octants[idx].buildLastDesc().getMorton();
     };
 
     /*!Get the begin position for the iterator of the local internal octants.
@@ -3031,7 +3031,7 @@ namespace bitpit {
         int32_t jump = idxtry;
         while(abs(jump) > 0){
 
-            mortontry = m_octree.m_octants[idxtry].computeMorton();
+            mortontry = m_octree.m_octants[idxtry].getMorton();
             jump = ((mortontry<morton)-(mortontry>morton))*abs(jump)/2;
             idxtry += jump;
             if (idxtry > noctants-1){
@@ -3045,20 +3045,20 @@ namespace bitpit {
                 }
             }
         }
-        if(m_octree.m_octants[idxtry].computeMorton() == morton){
+        if(m_octree.m_octants[idxtry].getMorton() == morton){
             return idxtry;
         }
         else{
             // Step until the mortontry lower than morton (one idx of distance)
             {
-                while(m_octree.m_octants[idxtry].computeMorton() < morton){
+                while(m_octree.m_octants[idxtry].getMorton() < morton){
                     idxtry++;
                     if(idxtry > noctants-1){
                         idxtry = noctants-1;
                         break;
                     }
                 }
-                while(m_octree.m_octants[idxtry].computeMorton() > morton){
+                while(m_octree.m_octants[idxtry].getMorton() > morton){
                     idxtry--;
                     if(idxtry > noctants-1){
                         idxtry = 0;
@@ -3109,7 +3109,7 @@ namespace bitpit {
             int32_t jump = idxtry;
             while(abs(jump) > 0){
                 
-                mortontry = m_octree.m_octants[idxtry].computeMorton();
+                mortontry = m_octree.m_octants[idxtry].getMorton();
                 jump = ((mortontry<morton)-(mortontry>morton))*abs(jump)/2;
                 idxtry += jump;
                 if (idxtry > noctants-1){
@@ -3123,20 +3123,20 @@ namespace bitpit {
                     }
                 }
             }
-            if(m_octree.m_octants[idxtry].computeMorton() == morton){
+            if(m_octree.m_octants[idxtry].getMorton() == morton){
                 return idxtry;
             }
             else{
                 // Step until the mortontry lower than morton (one idx of distance)
                 {
-                    while(m_octree.m_octants[idxtry].computeMorton() < morton){
+                    while(m_octree.m_octants[idxtry].getMorton() < morton){
                         idxtry++;
                         if(idxtry > noctants-1){
                             idxtry = noctants-1;
                             break;
                         }
                     }
-                    while(m_octree.m_octants[idxtry].computeMorton() > morton){
+                    while(m_octree.m_octants[idxtry].getMorton() > morton){
                         idxtry--;
                         if(idxtry > noctants-1){
                             idxtry = 0;
@@ -3157,7 +3157,7 @@ namespace bitpit {
             int32_t jump = idxtry;
             while(abs(jump) > 0){
                 
-                mortontry = m_octree.m_ghosts[idxtry].computeMorton();
+                mortontry = m_octree.m_ghosts[idxtry].getMorton();
                 jump = ((mortontry<morton)-(mortontry>morton))*abs(jump)/2;
                 idxtry += jump;
                 if (idxtry > nghosts-1){
@@ -3171,21 +3171,21 @@ namespace bitpit {
                     }
                 }
             }
-            if(m_octree.m_ghosts[idxtry].computeMorton() == morton){
+            if(m_octree.m_ghosts[idxtry].getMorton() == morton){
                 isghost = true;
                 return idxtry;
             }
             else{
                 // Step until the mortontry lower than morton (one idx of distance)
                 {
-                    while(m_octree.m_ghosts[idxtry].computeMorton() < morton){
+                    while(m_octree.m_ghosts[idxtry].getMorton() < morton){
                         idxtry++;
                         if(idxtry > nghosts-1){
                             idxtry = nghosts-1;
                             break;
                         }
                     }
-                    while(m_octree.m_ghosts[idxtry].computeMorton() > morton){
+                    while(m_octree.m_ghosts[idxtry].getMorton() > morton){
                         idxtry--;
                         if(idxtry > nghosts-1){
                             idxtry = 0;
@@ -3846,7 +3846,7 @@ namespace bitpit {
     };
 
     /** It finds the process owning the element definded by the Morton number passed as argument
-     * The Morton number can be computed using the method computeMorton() of Octant.
+     * The Morton number can be computed using the method getMorton() of Octant.
      * \param[in] morton Morton number of the element you want find the owner of
      * \return Rank of the process owning the element
      */
@@ -5024,7 +5024,7 @@ namespace bitpit {
         //update first last descendant
         if(getNumOctants()==0){
             Octant octDesc(m_dim,TreeConstants::MAX_LEVEL,pow(2,TreeConstants::MAX_LEVEL),pow(2,TreeConstants::MAX_LEVEL),(m_dim > 2 ? pow(2,TreeConstants::MAX_LEVEL) : 0));
-            m_octree.m_lastDescMorton = octDesc.computeMorton();
+            m_octree.m_lastDescMorton = octDesc.getMorton();
             m_octree.m_firstDescMorton = std::numeric_limits<uint64_t>::max();
         }
         else{

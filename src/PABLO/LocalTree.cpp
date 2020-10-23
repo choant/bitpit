@@ -132,8 +132,8 @@ namespace bitpit {
      * \return Morton index of the octant.
      */
     uint64_t
-    LocalTree::computeMorton(int32_t idx) const {
-        return m_octants[idx].computeMorton();
+    LocalTree::getMorton(int32_t idx) const {
+        return m_octants[idx].getMorton();
     };
 
     /** Compute the persistent XYZ key of the specified node of an octant
@@ -162,7 +162,7 @@ namespace bitpit {
      */
     uint64_t
     LocalTree::computeGhostMorton(int32_t idx) const {
-        return m_ghosts[idx].computeMorton();
+        return m_ghosts[idx].getMorton();
     };
 
     /** Compute the persistent XYZ key of the specified node of a ghost octant
@@ -225,7 +225,7 @@ namespace bitpit {
     LocalTree::setFirstDescMorton(){
         if(m_sizeOctants){
             octvector::const_iterator firstOctant = m_octants.begin();
-            m_firstDescMorton = firstOctant->computeMorton();
+            m_firstDescMorton = firstOctant->getMorton();
         }
     };
 
@@ -241,7 +241,7 @@ namespace bitpit {
             y = lastOctant->getLogicalY() + delta;
             z = lastOctant->getLogicalZ() + (m_dim-2)*delta;
             Octant lastDesc = Octant(m_dim, TreeConstants::MAX_LEVEL,x,y,z);
-            m_lastDescMorton = lastDesc.computeMorton();
+            m_lastDescMorton = lastDesc.getMorton();
         }
     };
 
@@ -308,13 +308,13 @@ namespace bitpit {
             m_octants.push_back(Octant(m_dim));
 
             Octant firstDesc(TreeConstants::MAX_LEVEL,0,0,0);
-            m_firstDescMorton = firstDesc.computeMorton();
+            m_firstDescMorton = firstDesc.getMorton();
 
             Octant lastDesc(m_dim,TreeConstants::MAX_LEVEL,TreeConstants::MAX_LENGTH-1,TreeConstants::MAX_LENGTH-1,(m_dim-2)*(TreeConstants::MAX_LENGTH-1));
-            m_lastDescMorton = lastDesc.computeMorton();
+            m_lastDescMorton = lastDesc.getMorton();
         } else {
             Octant octDesc(m_dim,TreeConstants::MAX_LEVEL,pow(2,TreeConstants::MAX_LEVEL),pow(2,TreeConstants::MAX_LEVEL),(m_dim > 2 ? pow(2,TreeConstants::MAX_LEVEL) : 0));
-            m_lastDescMorton  = octDesc.computeMorton();
+            m_lastDescMorton  = octDesc.getMorton();
             m_firstDescMorton = std::numeric_limits<uint64_t>::max();
         }
 
@@ -481,7 +481,7 @@ namespace bitpit {
             while(check){
                 check = idx1_gh < m_sizeGhosts;
                 if (check){
-                    check = m_ghosts[idx1_gh].computeMorton() > m_firstDescMorton;
+                    check = m_ghosts[idx1_gh].getMorton() > m_firstDescMorton;
                 }
                 if (check) idx1_gh--;
             }
@@ -490,7 +490,7 @@ namespace bitpit {
             while(check){
                 check = idx2_gh < m_sizeGhosts;
                 if (check){
-                    check = m_ghosts[idx2_gh].computeMorton() < m_lastDescMorton;
+                    check = m_ghosts[idx2_gh].getMorton() < m_lastDescMorton;
                 }
                 if (check) idx2_gh++;
             }
@@ -816,7 +816,7 @@ namespace bitpit {
         if (m_sizeOctants>0){
 
             idx = 0;
-            if (m_octants[idx].computeMorton() < partLastDesc){
+            if (m_octants[idx].getMorton() < partLastDesc){
 
                 Octant father0 = m_octants[idx].buildFather();
                 Octant father = father0;
@@ -934,7 +934,7 @@ namespace bitpit {
             samesizeoct = Octant(m_dim, level, sameSizeCoords[0], sameSizeCoords[1], sameSizeCoords[2]);
         }
 
-        uint64_t samesizemorton = samesizeoct.computeMorton();
+        uint64_t samesizemorton = samesizeoct.getMorton();
 
         //
         // Search in the internal octants
@@ -952,7 +952,7 @@ namespace bitpit {
 
         // Compute last discendent of virtual octant of same size
         Octant last_desc = samesizeoct.buildLastDesc();
-        uint64_t mortonlast = last_desc.computeMorton();
+        uint64_t mortonlast = last_desc.getMorton();
 
         // Compute coordinates
         std::array<int64_t,3> coord;
@@ -1022,7 +1022,7 @@ namespace bitpit {
                     break;
                 }
 
-                mortontry = m_octants[idxtry].computeMorton();
+                mortontry = m_octants[idxtry].getMorton();
                 if (mortontry > mortonlast){
                     break;
                 }
@@ -1111,7 +1111,7 @@ namespace bitpit {
                         break;
                     }
 
-                    mortontry = m_ghosts[idxtry].computeMorton();
+                    mortontry = m_ghosts[idxtry].getMorton();
                     if (mortontry > mortonlast){
                         break;
                     }
@@ -1192,7 +1192,7 @@ namespace bitpit {
             samesizeoct = Octant(m_dim, level, sameSizeCoords[0], sameSizeCoords[1], sameSizeCoords[2]);
         }
 
-        uint64_t samesizemorton = samesizeoct.computeMorton();
+        uint64_t samesizemorton = samesizeoct.getMorton();
 
         //
         // Search in the internal octants
@@ -1210,7 +1210,7 @@ namespace bitpit {
 
         // Compute last discendent of virtual octant of same size
         Octant last_desc = samesizeoct.buildLastDesc();
-        uint64_t mortonlast = last_desc.computeMorton();
+        uint64_t mortonlast = last_desc.getMorton();
 
         // Compute coordinates
         std::array<int64_t,3> coord;
@@ -1274,7 +1274,7 @@ namespace bitpit {
                     break;
                 }
 
-                mortontry = m_octants[idxtry].computeMorton();
+                mortontry = m_octants[idxtry].getMorton();
                 if (mortontry > mortonlast){
                     break;
                 }
@@ -1346,7 +1346,7 @@ namespace bitpit {
                         break;
                     }
 
-                    mortontry = m_ghosts[idxtry].computeMorton();
+                    mortontry = m_ghosts[idxtry].getMorton();
                     if (mortontry > mortonlast){
                         break;
                     }
@@ -1431,7 +1431,7 @@ namespace bitpit {
             samesizeoct = Octant(m_dim, level, sameSizeCoords[0], sameSizeCoords[1], sameSizeCoords[2]);
         }
 
-        uint64_t samesizemorton = samesizeoct.computeMorton();
+        uint64_t samesizemorton = samesizeoct.getMorton();
 
         //
         // Search in the internal octants
@@ -1449,7 +1449,7 @@ namespace bitpit {
 
         // Compute last discendent of virtual octant of same size
         Octant last_desc = samesizeoct.buildLastDesc();
-        uint64_t mortonlast = last_desc.computeMorton();
+        uint64_t mortonlast = last_desc.getMorton();
 
         // Compute coordinates
         std::array<int64_t,3> coord;
@@ -1489,7 +1489,7 @@ namespace bitpit {
                     break;
                 }
 
-                mortontry = m_octants[idxtry].computeMorton();
+                mortontry = m_octants[idxtry].getMorton();
                 if (mortontry > mortonlast){
                     break;
                 }
@@ -1538,7 +1538,7 @@ namespace bitpit {
                         break;
                     }
 
-                    mortontry = m_ghosts[idxtry].computeMorton();
+                    mortontry = m_ghosts[idxtry].getMorton();
                     if (mortontry > mortonlast){
                         break;
                     }
@@ -1803,13 +1803,13 @@ namespace bitpit {
         bool checkend = true;
         bool checkstart = true;
         if (m_ghosts.size()){
-            while(m_ghosts[idx2_gh].computeMorton() <= m_lastDescMorton){
+            while(m_ghosts[idx2_gh].getMorton() <= m_lastDescMorton){
                 idx2_gh++;
                 if (idx2_gh > m_sizeGhosts-1) break;
             }
             if (idx2_gh > m_sizeGhosts-1) checkend = false;
 
-            while(m_ghosts[idx1_gh].computeMorton() <= m_octants[0].computeMorton()){
+            while(m_ghosts[idx1_gh].getMorton() <= m_octants[0].getMorton()){
                 idx1_gh++;
                 if (idx1_gh > m_sizeGhosts-1) break;
             }
@@ -1909,12 +1909,12 @@ namespace bitpit {
             if (internal){
                 father = m_octants[0].buildFather();
                 lastdesc = father.buildLastDesc();
-                mortonld = lastdesc.computeMorton();
+                mortonld = lastdesc.getMorton();
                 nbro = 0;
                 for (idx=0; idx<m_treeConstants->nChildren; idx++){
                     if (idx<nocts){
                         // Check if family is complete or to be checked in the internal loop (some brother refined)
-                        if (m_octants[idx].computeMorton() <= mortonld){
+                        if (m_octants[idx].getMorton() <= mortonld){
                             nbro++;
                         }
                     }
@@ -1986,13 +1986,13 @@ namespace bitpit {
         bool checkend = true;
         bool checkstart = true;
         if (m_ghosts.size()){
-            while(m_ghosts[idx2_gh].computeMorton() <= m_lastDescMorton){
+            while(m_ghosts[idx2_gh].getMorton() <= m_lastDescMorton){
                 idx2_gh++;
                 if (idx2_gh > m_sizeGhosts-1) break;
             }
             if (idx2_gh > m_sizeGhosts-1) checkend = false;
 
-            while(m_ghosts[idx1_gh].computeMorton() <= m_octants[0].computeMorton()){
+            while(m_ghosts[idx1_gh].getMorton() <= m_octants[0].getMorton()){
                 idx1_gh++;
                 if (idx1_gh > m_sizeGhosts-1) break;
             }
@@ -2093,12 +2093,12 @@ namespace bitpit {
         // Check first internal octants
         father = m_octants[0].buildFather();
         lastdesc = father.buildLastDesc();
-        mortonld = lastdesc.computeMorton();
+        mortonld = lastdesc.getMorton();
         nbro = 0;
         for (idx=0; idx<m_treeConstants->nChildren; idx++){
             // Check if family is complete or to be checked in the internal loop (some brother refined)
             if (idx<nocts){
-                if (m_octants[idx].computeMorton() <= mortonld){
+                if (m_octants[idx].getMorton() <= mortonld){
                     nbro++;
                 }
             }
@@ -2942,7 +2942,7 @@ namespace bitpit {
         uint32_t highIndex = nOctants - 1;
         while (lowIndex < highIndex) {
             uint32_t midIndex  = lowIndex + (highIndex - lowIndex) / 2 + 1;
-            uint64_t midMorton = octants[midIndex].computeMorton();
+            uint64_t midMorton = octants[midIndex].getMorton();
             if (midMorton > targetMorton) {
                 highIndex = midIndex - 1;
             }
@@ -2958,7 +2958,7 @@ namespace bitpit {
         }
 
         if (lowIndex == 0 && highIndex == 0) {
-            uint64_t firstMorton = octants[0].computeMorton();
+            uint64_t firstMorton = octants[0].getMorton();
             if (targetMorton >= firstMorton) {
                 *markerIndex  = 0;
                 *markerMorton = firstMorton;
