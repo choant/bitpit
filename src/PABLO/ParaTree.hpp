@@ -28,6 +28,13 @@
 // =================================================================================== //
 // INCLUDES                                                                            //
 // =================================================================================== //
+
+// To workaround a bug in clang compiler, Octant header should be included
+// before bitpit_communications header. If this is not the case, octants
+// will be streamed in the communication buffer using the standard bitpit
+// operator instead of the custom operator defined for the octant.
+#include "Octant.hpp"
+
 #if BITPIT_ENABLE_MPI==1
 #include <mpi.h>
 #include "DataLBInterface.hpp"
@@ -35,7 +42,6 @@
 #include "bitpit_communications.hpp"
 #endif
 #include "tree_constants.hpp"
-#include "Octant.hpp"
 #include "LocalTree.hpp"
 #include "Map.hpp"
 #include "bitpit_IO.hpp"
