@@ -280,7 +280,7 @@ before_script:
 
 script:
   - if [ ${TRAVIS_BRANCH} != "coverity" ]; then
-      make -j2 && ctest;
+      make -j2 && ctest -VV -R PABLO;
     fi
 
 after_script:
