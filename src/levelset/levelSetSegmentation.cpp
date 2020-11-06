@@ -907,6 +907,12 @@ void LevelSetSegmentation::updateLSInNarrowBand( LevelSetOctree *visitee, const 
             continue;
         }
 
+        if( event.type == adaption::Type::TYPE_PARTITION_SEND){
+            continue;
+        } else if( event.type == adaption::Type::TYPE_PARTITION_RECV){
+            continue;
+        }
+
         for( long cellId : event.current ){
             centroid = visitee->computeCellCentroid(cellId);
 

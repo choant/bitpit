@@ -158,7 +158,7 @@ int subtest_001(int rank)
     mapper = mesh.partition(MPI_COMM_WORLD, true) ;
 
     start = std::chrono::system_clock::now();
-    levelset.partition(mapper) ;
+    levelset.update(mapper) ;
     end = std::chrono::system_clock::now();
 
     elapsed_part = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
