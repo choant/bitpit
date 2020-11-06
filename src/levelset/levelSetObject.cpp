@@ -23,7 +23,6 @@
 \*---------------------------------------------------------------------------*/
 
 # include <vector>
-# include <stack>
 
 # include "bitpit_operators.hpp"
 # include "bitpit_CG.hpp"
